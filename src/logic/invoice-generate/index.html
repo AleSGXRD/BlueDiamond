@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Invoice</title>
+        <style>
+        *{
+            font-family:  Calibri, 'Trebuchet MS', sans-serif;
+            font-weight: bolder;
+        }
+        body {
+            font-family: Arial;
+            margin: 20px;
+            display:flex;
+            flex-direction:column;
+            justify-items: center;
+            align-items:center;
+            justify-content: space-between;
+        }
+        @page{
+            background:url('${bluediamond4Src}') no-repeat center center;
+            background-size:75% auto;
+            opacity:0.3;
+            size: LETTER;
+            margin:0px;
+        }
+        @page:last{
+            @bottom-center{
+                content: "<img src='${bluediamond3Src}' alt='Corner' >"
+            }
+        }
+        .invoice {
+            position:relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between ;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            width: 100%;
+            max-width: 15.95cm;
+            height: 90vh;
+        }
+        .invoice-header{
+            width:100%;
+            display:flex;
+            justify-content: end;
+        }
+        .invoice-body{
+            width: 100%;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+        .invoice-footer{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .invoice-price {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            align-items: end;
+            text-align: end;
+        }
+        h1 {
+            width: 100%;
+            text-align: left;   
+            font-size: 24px;
+        }
+        .header, .footer {
+            width: 100%;
+            text-align: left;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: #000;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .description{
+            width: 300px; /* Ajusta el ancho deseado */
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .table th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+        .total {
+            display: grid;
+            width: 35%;
+            font-size: 12px;
+            grid-template-columns: repeat(2,1fr);
+            text-align: right;
+        }
+        .headers{
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            width: 100%;
+            gap: 16px;
+        }
+        .terms{
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            text-align: left;
+            align-items: start;
+            width: 100%;
+            color: #000;
+            font-size: 12px;
+            padding-top:4px;
+            padding-bottom:4px;
+
+        }
+        .header-title{
+            font-weight: bolder;
+            text-transform: uppercase;
+        }
+        hr{
+            border: 0;
+            height: 0.5px;
+            background: black;
+            width: 100%;
+            aspect-ratio: 1/1;
+            font-weight: lighter;
+            text-align: left;
+        }
+        </style>
+    </head>
+    <body>
+        <section class="invoice">
+            <div class="invoice-body">
+                <section class="invoice-header">
+                    <img src="${imageSrc}" alt="Logo" style="max-width: 100px; margin-bottom: 20px;">
+                </section>
+
+                <h1>INVOICE</h1>
+
+                <div class="headers">
+                    <div class="header">
+                        <div>From: </div>
+                        <div class="header-title">BLUE DIAMOND POOL SERVICE</div>
+                        <div>P.O.BOX 654121</div>
+                        <div>MIAMI FL</div>
+                        <div>33365</div>
+                        <div>USA</div>
+                        <div>Email: bluediamond.eps@gmail.com </div>
+                        <div>Tel: 786 914 8230</div>
+                    </div>
+                
+                    <div class="header">
+                        <div>To: ${client.clientId}</div>
+                        <div class="header-title">${client.name}</div>
+                        <div>${client.address}</div>
+                        <div>${client.city}</div>
+                        <div>${client.cp}</div>
+                        <div>${client.country}</div>
+                        <div>Email: ${client.email} </div>
+                        <div>Tel: ${client.phoneNumber}</div>
+                    </div>
+                </div>
+                
+                <div class="terms">
+                    <div>Number: INV-${id}</div>
+                    <div>Date: ${format(date,'M/d/yyyy')} </div>
+                    <div>Terms: Due on Receipt</div>
+                    <div>Due: </div>
+                </div>
+
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th>Item</th>
+                    <th class="description">Description</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Discount (%)</th>
+                    <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${
+                    invs.map((inv:Invoice) => `
+                        <tr>
+                            <td>${inv.itemId}</td>
+                            <td class="description">${inv.itemName}</td>
+                            <td>$${inv.price}</td>
+                            <td>${inv.quantity}</td>
+                            <td>${inv.discount} %</td>
+                            <td>$${((inv.quantity * inv.price ) * ((100-inv.discount) / 100)).toFixed(2)}</td>
+                        </tr>
+                        `)
+                    }
+                </tbody>
+                </table>
+            </div>
+            <div class="invoice-footer">
+                <hr>
+                    <div class="invoice-price"> 
+                        <div class="total"><strong>Sub-Total:</strong> <div>$${amount.toFixed(2)}</div></div>
+                        <div class="total"><strong>Tax:</strong> <div>$0.00</div></div>
+                        <div class="total"><strong>Total:</strong> <div>$${amount.toFixed(2)}</div></div>
+                    </div>
+                <hr>
+                <div class="footer">
+                    <div>Notes:</div>
+                    <div>Make all checks payable to Company Name</div>
+                    <div>Thank you for your business!</div>
+                </div>
+            </div>
+            
+        
+        </section>
+        
+    </body>
+    </html>
